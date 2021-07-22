@@ -1,9 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { IDish, IFoodItem } from '../Interfaces';
-const router = Router();
-const FoodItem = require('../models/foodItem.model');
 
-router
+const foodItems = Router();
+
+import { IDish, IFoodItem } from '../Interfaces';
+import FoodItem from '../models/foodItem.model';
+
+export default foodItems
   .get('/', function (req: Request, res: Response) {
     try {
       FoodItem.find({}, function (err: Error, foodItems: IFoodItem[]) {
@@ -19,34 +21,43 @@ router
 
   .post('/:user/foodPosts', function (req: Request, res: Response) {
     try {
-      const foodItem = new FoodItem({
-        ...req.body,
-        coverPhoto: req.file?.filename,
+      if (!req.body) {
+        res.status(400).send('Bad Request');
+      }
+
+      const foodItem = new FoodItem(req.body);
+      foodItem.save(function (err) {
+        if (err) res.status(400).send(err);
       });
-      foodItem.save().then(() => res.send('Posted'));
+      res.status(200).send('Posted');
     } catch (err) {
-      console.log(err);
+      res.status(500).send('Oops! Something went wrong');
     }
   })
   .put('/:user/foodPosts/:_id', function (req: Request, res: Response) {
     try {
+      if (!req.body) {
+        res.status(400).send('Bad Request');
+      }
+
       const dish: IDish = req.body;
       FoodItem.updateOne({ _id: req.params._id }, dish).then(() =>
-        res.send('Updated')
+        res.status(200).send('Updated')
       );
     } catch (err) {
-      console.log(err);
+      res.status(500).send('Oops! Something went wrong');
     }
   })
   .delete('/:user/foodPosts/:_id', function (req: Request, res: Response) {
     try {
-      const dish: IDish = req.body;
-      FoodItem.deleteOne({ _id: req.params._id }, dish).then(() =>
-        res.send('Deleted')
+      if (!req.body) {
+        res.status(400).send('Bad Request');
+      }
+
+      FoodItem.deleteOne({ _id: req.params._id }).then(() =>
+        res.status(200).send('Deleted')
       );
     } catch (err) {
       console.log(err);
     }
   });
-
-module.exports = router;

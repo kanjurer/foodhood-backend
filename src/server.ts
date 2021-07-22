@@ -1,19 +1,24 @@
 import mongoose from 'mongoose';
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 
+import users from './routes/users';
+import foodItems from './routes/foodItems';
+
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
+// mongoDB connection
 mongoose.connect('mongodb://localhost:27017/foodhood', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
 });
-const foodItems = require('./routes/foodItems');
-app.use('/foodItems', foodItems);
 
-const users = require('./routes/users');
+app.use('/foodItems', foodItems);
 app.use('/users', users);
 
 app.listen(3001, () => console.log('App is running on port 3001'));

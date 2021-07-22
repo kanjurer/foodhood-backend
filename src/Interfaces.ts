@@ -1,3 +1,10 @@
+export interface IUser {
+  username: string;
+  nameOfUser: string;
+  password: string;
+  role: Role;
+}
+
 export interface IDish {
   madeByUser: string;
   cuisine: string;
@@ -18,10 +25,3 @@ export interface ICartItem extends IFoodItem {
 }
 
 export type Role = 'consumer' | 'chef';
-
-export interface IUser {
-  username: string;
-  nameOfUser: string;
-  password: string;
-  role: string;
-}
