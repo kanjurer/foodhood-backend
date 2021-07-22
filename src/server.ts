@@ -2,8 +2,9 @@ import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
 
-import users from './routes/users';
-import foodItems from './routes/foodItems';
+import userEntry from './routes/userEntry';
+import foods from './routes/foods';
+import chefPosts from './routes/chefPosts';
 
 const app = express();
 
@@ -18,7 +19,8 @@ mongoose.connect('mongodb://localhost:27017/foodhood', {
   useFindAndModify: false,
 });
 
-app.use('/foodItems', foodItems);
-app.use('/users', users);
+app.use('/foods', foods);
+app.use('/', userEntry);
+app.use('/users', chefPosts);
 
 app.listen(3001, () => console.log('App is running on port 3001'));
