@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 
 const userEntry = Router();
@@ -10,7 +10,12 @@ export default userEntry
   .get('/', function (req: Request, res: Response) {})
   .post('/signup', async function (req: Request, res: Response) {
     try {
-      if (!req.body.password || !req.body.username) {
+      if (
+        !req.body.password ||
+        !req.body.username ||
+        !req.body.nameOfUser ||
+        !req.body.role
+      ) {
         return res.status(400).send('Bad Request');
       }
 
@@ -20,7 +25,7 @@ export default userEntry
       const user = new User({
         username: req.body.username,
         nameOfUser: req.body.nameOfUser,
-        passwordHash: hashedPassword,
+        password: hashedPassword,
         role: req.body.role,
       });
 
@@ -28,18 +33,18 @@ export default userEntry
         if (err) {
           return res.status(400).send(err);
         } //bad request
+        res.status(201).send('User created successfully!');
       });
-      res.status(201).send('User created successfully!');
     } catch (err) {
       res.status(500).send('Oops! Something went wrong');
     }
   })
-  .post('/login', function (req: Request, res: Response) {
+  .post('/login', async function (req: Request, res: Response) {
     if (!req.body.password || !req.body.username) {
       return res.status(400).send('Bad Request');
     }
 
-    User.find(
+    User.findOne(
       { username: req.body.username },
       async function (err: Error, user: IUser) {
         if (err) {
@@ -62,3 +67,21 @@ export default userEntry
       }
     );
   });
+
+function checkAuthenticated(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.redirect('/login');
+}
+
+function checkNotAuthenticated(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (req.isAuthenticated()) {
+    return res.redirect('/foods');
+  }
+  next();
+}

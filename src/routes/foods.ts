@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 
 const foods = Router();
 
-import { IDish, IFoodItem } from '../Interfaces';
+import { IFoodItem } from '../Interfaces';
 import FoodItem from '../models/foodItem.model';
 
 export default foods.get('/', function (req: Request, res: Response) {

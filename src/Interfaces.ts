@@ -1,12 +1,16 @@
-export interface IUser {
+export interface IUserFrontend {
+  _id: string;
   username: string;
   nameOfUser: string;
   password: string;
   role: Role;
 }
 
+export interface IUser extends IUserFrontend {
+  password: string;
+}
+
 export interface IDish {
-  madeByUser: string;
   cuisine: string;
   type: 'Vegetarian' | 'Non-Vegetarian' | 'Vegan';
   nameOfDish: string;
@@ -17,6 +21,7 @@ export interface IDish {
 }
 
 export interface IFoodItem extends IDish {
+  madeByUser: string;
   _id: string;
 }
 

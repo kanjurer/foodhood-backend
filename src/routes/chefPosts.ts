@@ -1,15 +1,16 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 
 const chefPosts = Router();
+chefPosts.use(isChef);
 
-import { IDish, IFoodItem } from '../Interfaces';
+import { IDish, IFoodItem, IUser } from '../Interfaces';
 import FoodItem from '../models/foodItem.model';
 
 export default chefPosts
-  .get('/:user/chefPosts', function (req: Request, res: Response) {
+  .get('/chefPosts', function (req: Request, res: Response) {
     try {
       FoodItem.find(
-        { madeByUser: req.params.user },
+        { madeByUser: (req.user as IUser).username }, // improve
         function (err: Error, foodItems: IFoodItem[]) {
           if (err) {
             return res.status(404).send('Oh uh, something went wrong');
@@ -22,47 +23,66 @@ export default chefPosts
     }
   })
 
-  .post('/:user/chefPosts', function (req: Request, res: Response) {
+  .post('/chefPosts', function (req: Request, res: Response) {
     try {
       if (!req.body) {
         return res.status(400).send('Bad Request');
       }
-
-      const foodItem = new FoodItem(req.body);
+      const dish: IDish = req.body;
+      const foodItem = new FoodItem({
+        dish,
+        madeByUser: (req.user as IUser).username,
+      });
       foodItem.save(function (err) {
         if (err) {
           return res.status(400).send(err);
         }
+        res.status(200).send('Posted');
       });
-      res.status(200).send('Posted');
     } catch (err) {
       res.status(500).send('Oops! Something went wrong');
     }
   })
-  .put('/:user/chefPosts/:_id', function (req: Request, res: Response) {
+
+  .put('/chefPosts/:_id', function (req: Request, res: Response) {
     try {
       if (!req.body) {
         return res.status(400).send('Bad Request');
       }
 
       const dish: IDish = req.body;
-      FoodItem.updateOne({ _id: req.params._id }, dish).then(() =>
-        res.status(200).send('Updated')
-      );
+      FoodItem.updateOne(
+        { _id: req.params._id, madeByUser: (req.user as IUser).username },
+        dish
+      ).then(() => res.status(200).send('Updated'));
     } catch (err) {
       res.status(500).send('Oops! Something went wrong');
     }
   })
-  .delete('/:user/chefPosts/:_id', function (req: Request, res: Response) {
+  .delete('/chefPosts/:_id', function (req: Request, res: Response) {
     try {
       if (!req.body) {
         return res.status(400).send('Bad Request');
       }
 
-      FoodItem.deleteOne({ _id: req.params._id }).then(() =>
-        res.status(200).send('Deleted')
-      );
+      FoodItem.deleteOne({
+        _id: req.params._id,
+        madeByUser: (req.user as IUser).username,
+      }).then(() => res.status(200).send('Deleted'));
     } catch (err) {
       res.status(500).send('Oops! Something went wrong');
     }
   });
+
+function isChef(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) {
+    return res.status(401).send('Req.user not found');
+  }
+
+  if ((req.user as IUser).role !== 'chef') {
+    // improve
+    return res.status(401).send('Not a chef');
+  }
+
+  next();
+}

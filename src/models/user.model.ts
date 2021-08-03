@@ -20,14 +20,12 @@ const userSchema = new Schema<IUser>({
   password: {
     required: true,
     type: String,
-    min: [3, 'Should be a minimum of 3 characters!'],
-    max: [30, 'Only max of 30 characters allowed'],
   },
   role: {
     required: true,
     type: String,
-    default: 'customer',
-    values: ['customer', 'chef'],
+    default: 'consumer',
+    values: ['consumer', 'chef'],
   },
 });
 
