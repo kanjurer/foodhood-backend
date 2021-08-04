@@ -3,14 +3,17 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import passport from 'passport';
 import session from 'express-session';
+import redis from 'redis';
+import connectRedis from 'connect-redis';
 
 import initializePassport from './passport-config';
 import users from './routes/users';
-import signup from './routes/signup';
 import foods from './routes/foods';
-import chefPosts from './routes/chefPosts';
+import chefPosts from './routes/user/chefPosts';
 
 const app: Express = express();
+const RedisStore = connectRedis(session);
+let redisClient = redis.createClient();
 
 initializePassport(passport);
 
@@ -18,8 +21,9 @@ app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use(express.json());
 app.use(
   session({
+    store: new RedisStore({ client: redisClient }),
     secret: 'thisissecret',
-    cookie: { maxAge: 300000 },
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
     resave: false,
     saveUninitialized: false,
   })
@@ -40,24 +44,27 @@ app.use('/foods', foods);
 app.use(
   '/login',
   checkNotAuthenticated,
-  passport.authenticate('local', {}),
+  passport.authenticate('local-login', {}),
   (req: Request, res: Response) => {
-    res.json('LoggedInToServer');
+    res.json('Logged in successfully');
   }
 );
 
-app.use('/logout', checkAuthenticated, (req: Request, res: Response) => {
-  req.session.destroy(function (err) {
-    res.clearCookie('connect.sid').status(201).send('Logged out successfully');
-  });
+app.use('/logout', (req: Request, res: Response) => {
+  req.logOut();
+  res.send('Logged out successfully');
 });
 
-app.use('/signup', signup, (req: Request, res: Response) => {
-  res.redirect('/login');
-});
+app.use(
+  '/signup',
+  checkNotAuthenticated,
+  passport.authenticate('local-signup', {}),
+  (req: Request, res: Response) => {
+    res.send('Signed up and logged in successfully');
+  }
+);
 
 app.use('/user', checkAuthenticated, chefPosts);
-
 app.use('/users', checkAuthenticated, users);
 
 app.listen(3001, () => console.log('App is running on port 3001'));
@@ -79,5 +86,5 @@ function checkAuthenticated(req: Request, res: Response, next: NextFunction) {
     return next();
   }
   console.log('not passed');
-  return res.status(401).send('Not Logged In Bro!');
+  return res.status(401).send('User not logged in');
 }
