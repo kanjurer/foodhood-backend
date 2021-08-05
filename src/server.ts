@@ -82,9 +82,7 @@ function checkNotAuthenticated(
 
 function checkAuthenticated(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
-    console.log('passed');
     return next();
   }
-  console.log('not passed');
   return res.status(401).send('User not logged in');
 }

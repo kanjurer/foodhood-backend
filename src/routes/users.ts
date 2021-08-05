@@ -5,7 +5,7 @@ const users = Router();
 
 users.get('/user', function (req: Request, res: Response) {
   if (!req.user) {
-    return res.status(401).json('User not fount!');
+    return res.status(401).json('User not found!');
   }
 
   const user: IUserFrontend = {
@@ -14,8 +14,7 @@ users.get('/user', function (req: Request, res: Response) {
     nameOfUser: req.user.nameOfUser,
     role: req.user.role,
   };
-
-  return res.status(204).json(user);
+  return res.status(200).json(user);
 });
 
 export default users;

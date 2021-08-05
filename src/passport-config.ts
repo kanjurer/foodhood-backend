@@ -27,7 +27,6 @@ export default function initializePassport(passport: PassportStatic) {
     )
   );
   passport.serializeUser((user, done) => {
-    console.log('serialised user');
     return done(null, user._id);
   });
   passport.deserializeUser((id, done) => {

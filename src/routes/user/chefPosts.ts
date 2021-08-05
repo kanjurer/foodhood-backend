@@ -41,7 +41,6 @@ export default chefPosts
       };
       const foodItem = new FoodItem(dish);
 
-      console.log(req.body);
       foodItem.save(function (err) {
         if (err) {
           return res.status(400).send(err);
