@@ -7,9 +7,10 @@ import redis from 'redis';
 import connectRedis from 'connect-redis';
 
 import initializePassport from './passport-config';
-import users from './routes/users';
+import user from './routes/user/user';
 import foods from './routes/foods';
 import chefPosts from './routes/user/chefPosts';
+import users from './routes/users';
 
 const app: Express = express();
 const RedisStore = connectRedis(session);
@@ -46,7 +47,7 @@ app.use(
   checkNotAuthenticated,
   passport.authenticate('local-login', {}),
   (req: Request, res: Response) => {
-    res.json('Logged in successfully');
+    res.status(200).send('Logged in successfully');
   }
 );
 
@@ -60,12 +61,13 @@ app.use(
   checkNotAuthenticated,
   passport.authenticate('local-signup', {}),
   (req: Request, res: Response) => {
-    res.send('Signed up and logged in successfully');
+    res.status(200).send('Signed up and logged in successfully');
   }
 );
 
-app.use('/user', checkAuthenticated, chefPosts);
+app.use('/chefPosts', checkAuthenticated, chefPosts);
 app.use('/users', checkAuthenticated, users);
+app.use('/user', checkAuthenticated, user);
 
 app.listen(3001, () => console.log('App is running on port 3001'));
 
@@ -82,7 +84,9 @@ function checkNotAuthenticated(
 
 function checkAuthenticated(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
+    console.log('passed');
     return next();
   }
+  console.log('not passed');
   return res.status(401).send('User not logged in');
 }

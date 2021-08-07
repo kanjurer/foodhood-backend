@@ -8,7 +8,7 @@ import { IDish, IFoodItem, IUser } from '../../Interfaces';
 import FoodItem from '../../models/foodItem.model';
 
 export default chefPosts
-  .get('/chefPosts', function (req: Request, res: Response) {
+  .get('/', function (req: Request, res: Response) {
     if (!req.user) {
       return res.status(401).send('Req.user not found');
     }
@@ -27,7 +27,7 @@ export default chefPosts
     }
   })
 
-  .post('/chefPosts', function (req: Request, res: Response) {
+  .post('/', function (req: Request, res: Response) {
     if (!req.user) {
       return res.status(401).send('Req.user not found');
     }
@@ -35,6 +35,7 @@ export default chefPosts
       if (!req.body) {
         return res.status(400).send('Bad Request');
       }
+      console.log(req.body);
       const dish: IDish = {
         ...req.body,
         madeByUser: req.user.username,
@@ -52,7 +53,7 @@ export default chefPosts
     }
   })
 
-  .put('/chefPosts/:_id', function (req: Request, res: Response) {
+  .put('/:_id', function (req: Request, res: Response) {
     try {
       if (!req.body) {
         return res.status(400).send('Bad Request');
@@ -67,7 +68,7 @@ export default chefPosts
       res.status(500).send('Oops! Something went wrong');
     }
   })
-  .delete('/chefPosts/:_id', function (req: Request, res: Response) {
+  .delete('/:_id', function (req: Request, res: Response) {
     try {
       if (!req.user) {
         return res.status(401).send('Req.user not found');
