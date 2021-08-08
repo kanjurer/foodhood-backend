@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { IUser, IUserFrontend } from '../Interfaces';
-import User from '../models/user.model';
+
+import { IUser, IUserFrontend } from '../../Interfaces';
+import User from '../../models/user.model';
 
 const users = Router();
 

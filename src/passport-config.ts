@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
+import { Request } from 'express';
 import { PassportStatic } from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import { Request } from 'express';
 
 import { IUser } from './Interfaces';
 import User from './models/user.model';
@@ -11,7 +11,7 @@ export default function initializePassport(passport: PassportStatic) {
     'local-login',
     new LocalStrategy(
       { usernameField: 'username', passwordField: 'password' },
-      authenticateUser
+      logInUser
     )
   );
 
@@ -23,7 +23,7 @@ export default function initializePassport(passport: PassportStatic) {
         passwordField: 'password',
         passReqToCallback: true,
       },
-      registerUser
+      signUpUser
     )
   );
   passport.serializeUser((user, done) => {
@@ -37,7 +37,7 @@ export default function initializePassport(passport: PassportStatic) {
 }
 
 // a parameter of LocalStrategy constructor
-const authenticateUser = (username: string, password: string, done: any) => {
+const logInUser = (username: string, password: string, done: any) => {
   User.findOne(
     { username: username },
     async function (err: Error, user: IUser) {
@@ -59,7 +59,7 @@ const authenticateUser = (username: string, password: string, done: any) => {
   );
 };
 
-const registerUser = (
+const signUpUser = (
   req: Request,
   username: string,
   password: string,

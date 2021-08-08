@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import { IDish } from '../Interfaces';
 
 const { Schema } = mongoose;

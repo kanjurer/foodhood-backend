@@ -1,11 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
+import { IDish, IFoodItem, IUser } from '../../Interfaces';
+import FoodItem from '../../models/foodItem.model';
+
 const chefPosts = Router();
 
 chefPosts.use(isChef);
-
-import { IDish, IFoodItem, IUser } from '../../Interfaces';
-import FoodItem from '../../models/foodItem.model';
 
 export default chefPosts
   .get('/', function (req: Request, res: Response) {
@@ -35,7 +35,7 @@ export default chefPosts
       if (!req.body) {
         return res.status(400).send('Bad Request');
       }
-      console.log(req.body);
+
       const dish: IDish = {
         ...req.body,
         madeByUser: req.user.username,
@@ -83,6 +83,7 @@ export default chefPosts
     }
   });
 
+// isChef function
 function isChef(req: Request, res: Response, next: NextFunction) {
   if (!req.user) {
     return res.status(401).send('Req.user not found');

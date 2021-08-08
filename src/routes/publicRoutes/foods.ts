@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
 
-const foods = Router();
+import { IFoodItem } from '../../Interfaces';
+import FoodItem from '../../models/foodItem.model';
 
-import { IFoodItem } from '../Interfaces';
-import FoodItem from '../models/foodItem.model';
+const foods = Router();
 
 export default foods
   .get('/', function (req: Request, res: Response) {

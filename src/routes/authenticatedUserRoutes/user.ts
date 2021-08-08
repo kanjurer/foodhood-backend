@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { Router, Request, Response } from 'express';
+
 import { IUser, IUserFrontend } from '../../Interfaces';
 import User from '../../models/user.model';
 
@@ -42,7 +43,7 @@ user
         req.login(newUser, (err: any) => {
           console.log(err);
         });
-        console.log('done bro');
+
         return res.status(200).json(req.user);
       }
 
@@ -51,8 +52,14 @@ user
           return res.status(400).json('Bad Request');
         }
 
+        if (req.body.oldPassword === req.body.newPassword) {
+          return res
+            .status(400)
+            .json('New password cannot be the same as old password');
+        }
+
         if (!(await bcrypt.compare(req.body.oldPassword, req.user.password))) {
-          return res.json('Old password is incorrect!');
+          return res.status(400).json('Old password is incorrect!');
         }
 
         const salt = await bcrypt.genSalt();
@@ -70,8 +77,14 @@ user
         req.login(newUser, (err: any) => {
           console.log(err);
         });
-        console.log('done bro');
-        return res.status(200).json(req.user);
+
+        const user: IUserFrontend = {
+          username: req.user.username,
+          _id: req.user._id,
+          nameOfUser: req.user.nameOfUser,
+          role: req.user.role,
+        };
+        return res.status(200).json(user);
       } else {
         return res.status(400).json('Bad Req');
       }
