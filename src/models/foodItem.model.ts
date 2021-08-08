@@ -28,6 +28,7 @@ const foodItemSchema = new Schema<IDish>({
   },
   ingredients: String,
   allergins: String,
+  coverPhoto: String,
   priceInCad: {
     required: true,
     type: Number,

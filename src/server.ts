@@ -1,4 +1,5 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
+import path from 'path';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import passport from 'passport';
@@ -18,6 +19,10 @@ const redisClient: RedisClient = redis.createClient();
 
 initializePassport(passport);
 
+app.use(
+  '/static',
+  express.static(path.join(__dirname, '..', '..', 'tmp', 'food-cover-photos'))
+);
 app.use(cors(/*{ credentials: true, origin: 'http://localhost:3000' }*/));
 app.use(express.json());
 app.use(

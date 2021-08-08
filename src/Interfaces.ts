@@ -10,6 +10,7 @@ export interface IUser extends IUserFrontend {
 }
 
 export interface IDish {
+  coverPhoto: string | null;
   madeByUser: string;
   cuisine: string;
   type: 'Vegetarian' | 'Non-Vegetarian' | 'Vegan';
