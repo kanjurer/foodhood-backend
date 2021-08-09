@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 
-import { IDish, IFoodItem, IUser } from '../../Interfaces';
+import { IDish, IUser } from '../../Interfaces';
 import FoodItem from '../../models/foodItem.model';
+import { paginationChefData } from '../../paginateData';
 
 const chefPosts = Router();
 
@@ -20,25 +21,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 export default chefPosts
-  .get('/', function (req: Request, res: Response) {
-    if (!req.user) {
-      return res.status(401).send('Req.user not found');
+  .get(
+    '/',
+    paginationChefData<IDish>(FoodItem),
+    function (req: Request, res: Response) {
+      if (req.paginatedResult) {
+        console.log(req.paginatedResult.results);
+        return res.status(200).json(req.paginatedResult.results);
+      }
+      return res.status(400).send('Ooopsie, data is invalid');
     }
-    try {
-      FoodItem.find(
-        { madeByUser: req.user.username },
-        function (err: Error, foodItems: IFoodItem[]) {
-          if (err) {
-            return res.status(404).send('Oh uh, something went wrong');
-          }
-
-          res.status(200).json(foodItems);
-        }
-      );
-    } catch (err) {
-      res.status(500).send('Oops! Something went wrong');
-    }
-  })
+  )
 
   .post(
     '/',

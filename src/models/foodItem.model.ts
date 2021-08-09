@@ -4,7 +4,7 @@ import { IDish } from '../Interfaces';
 
 const { Schema } = mongoose;
 
-const foodItemSchema = new Schema<IDish>({
+export const foodItemSchema = new Schema<IDish>({
   madeByUser: {
     required: true,
     type: String,

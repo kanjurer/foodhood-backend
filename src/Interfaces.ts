@@ -30,3 +30,9 @@ export interface ICartItem extends IFoodItem {
 }
 
 export type Role = 'consumer' | 'chef';
+
+export interface IOrderItem {
+  purchasedItem: ICartItem;
+  dateOfPurchase: Date;
+  orderByUser: string;
+}
