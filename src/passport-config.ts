@@ -39,7 +39,7 @@ export default function initializePassport(passport: PassportStatic) {
 // a parameter of LocalStrategy constructor
 const logInUser = (username: string, password: string, done: any) => {
   User.findOne(
-    { username: username },
+    { username: username.toLowerCase() },
     async function (err: Error, user: IUser) {
       if (err) {
         return done(err);
@@ -88,7 +88,7 @@ const signUpUser = (
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
         const user = new User({
-          username: req.body.username,
+          username: req.body.username.toLowerCase(),
           nameOfUser: req.body.nameOfUser,
           password: hashedPassword,
           role: req.body.role,

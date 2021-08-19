@@ -20,12 +20,12 @@ user
     };
     return res.status(200).json(user);
   })
-  .put('/:infoToBeEdited', async function (req: Request, res: Response) {
+  .put('/', async function (req: Request, res: Response) {
     if (!req.user) {
       return res.status(401).json('Req.user not found');
     }
     try {
-      if (req.params.infoToBeEdited === 'nameOfUser') {
+      if (req.query.nameOfUser) {
         if (!req.body.nameOfUser) {
           return res.status(400).json('Bad Request');
         }
@@ -44,10 +44,12 @@ user
           console.log(err);
         });
 
-        return res.status(200).json(req.user);
+        return res
+          .status(200)
+          .json('Your username has been updated successfully!');
       }
 
-      if (req.params.infoToBeEdited === 'password') {
+      if (req.query.password) {
         if (!req.body.oldPassword || !req.body.newPassword) {
           return res.status(400).json('Bad Request');
         }
@@ -75,21 +77,24 @@ user
         }
 
         req.login(newUser, (err: any) => {
-          console.log(err);
+          if (err) {
+            console.log(err);
+          }
         });
 
-        const user: IUserFrontend = {
-          username: req.user.username,
-          _id: req.user._id,
-          nameOfUser: req.user.nameOfUser,
-          role: req.user.role,
-        };
-        return res.status(200).json(user);
+        return res
+          .status(200)
+          .json('Your password has been updated successfully!');
       } else {
         return res.status(400).json('Bad Req');
       }
     } catch (err) {
       return res.status(500).json('Oops! Something went wrong');
+    }
+  })
+  .get('/orders', (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json('Req.user not found');
     }
   });
 
